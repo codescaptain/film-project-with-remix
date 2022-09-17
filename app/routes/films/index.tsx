@@ -7,7 +7,6 @@ import { Film, getFilms } from "~/api/films";
 export const loader: LoaderFunction = async ({request}) => {
     const url = new URL(request.url)
     const title = url.searchParams.get('title')
-    console.log('hello');
     
     return getFilms(title);
 }
