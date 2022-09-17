@@ -1,12 +1,14 @@
 
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Film, getFilms } from "~/api/films";
 
 // SERVER SIDE
 export const loader: LoaderFunction = async ({request}) => {
     const url = new URL(request.url)
     const title = url.searchParams.get('title')
+    console.log('hello');
+    
     return getFilms(title);
 }
 
@@ -45,10 +47,16 @@ export default function FilmsIndex(){
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {films.map((film) => (
-                <div key={film.title} className="hover:shadow-2xl hover:scale-105 hover:font-bold cursor-pointer">
-                    <div>{film.title}</div>
-                    <img src={film.image} alt={film.title} />
-                </div>
+          <Link
+          title={film.title}
+          key={film.id}
+          to={film.id}
+          className="hover:shadow-2xl hover:scale-105 hover:font-bold cursor-pointer"
+          prefetch="intent"
+        >
+          <div>{film.title}</div>
+          <img src={film.image} alt={film.title} />
+        </Link>
             ))}
         </div>
     </div>
