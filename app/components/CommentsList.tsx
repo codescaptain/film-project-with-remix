@@ -1,4 +1,4 @@
-import { Form, useTransition } from "@remix-run/react"
+import { Form, useActionData, useTransition } from "@remix-run/react"
 import { CommentEntry } from "~/api/comments"
 
 type CommentsListProps = {
@@ -8,7 +8,11 @@ type CommentsListProps = {
 
 export default function CommentsList({filmId, comments}: CommentsListProps){
     const transition = useTransition();
-    const inputStyle = 'border border-slate-400 rounded py-2 px-3 inline-block w-full'
+    const actionData = useActionData();
+
+    const inputStyle = (fieldName:string) => `border border-slate-400 rounded py-2 px-3 inline-block w-full ${
+        actionData?.errors[fieldName] ? 'border-red-500' : ''
+    }`
     return(
         <div>
             <h1 className="text-3xl mb-2">Community Comments</h1>
@@ -22,13 +26,19 @@ export default function CommentsList({filmId, comments}: CommentsListProps){
                     </div>
                 ))}
                 <div className="p-4 border rounded border-slate-400">
-                    <Form method="post">
+                    <Form method="post" action={`/films/${filmId}`}>
                         <fieldset disabled={transition.state === 'submitting'}>
                             <label className="inline-block my-2">Name:</label>
-                            <input type="text" name="name" className={inputStyle} />
+                            <input type="text" name="name" className={inputStyle('name')} />
+                            {actionData?.errors.name &&(
+                                <p className="text-red-500">{actionData?.errors.name}</p>
+                            )}
 
                             <label className="inline-block my-2">Message:</label>
-                            <input type="text" name="message" className={inputStyle} />
+                            <input type="text" name="message" className={inputStyle('message')} />
+                            {actionData?.errors.message &&(
+                                <p className="text-red-500">{actionData?.errors.message}</p>
+                            )}
 
                             <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-2 rounded ">
                                 {
