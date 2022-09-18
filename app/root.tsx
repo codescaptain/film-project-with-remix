@@ -1,8 +1,7 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
-  LinksFunction,
   Meta,
   Outlet,
   Scripts,

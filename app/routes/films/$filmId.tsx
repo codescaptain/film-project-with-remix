@@ -1,9 +1,29 @@
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
 import { Film, getFilmById } from "~/api/films";
 import invariant from "tiny-invariant"
 import { Outlet, useCatch, useLoaderData } from "@remix-run/react";
 import FilmBanner from "~/components/FilmBanner";
 import CharacterList from "~/components/CharacterList";
+import CommentsList from "~/components/CommentsList";
+import { addComment } from "~/api/comments";
+
+
+export const action: ActionFunction = async ({request, params}) => {
+    invariant(params.filmId, 'expected params.filmId');
+    const body = await request.formData();
+
+    const comment = {
+        name: body.get('name') as string,
+        message: body.get('message') as string,
+        filmId: params.filmId
+    }
+
+    await addComment(comment)
+
+    return redirect(`/films/${params.filmId}`)
+    
+}
+
 
 // SERVER SIDE
 export const loader: LoaderFunction = async ({ params }) => {
@@ -17,9 +37,9 @@ export const loader: LoaderFunction = async ({ params }) => {
     return film;
   };
 
-export const meta: MetaFunction = () => ({
+export const meta: MetaFunction = ({data}) => ({
     charset: "utf-8",
-    title: "Films | Studio Codescaptain",
+    title: data.title,
     viewport: "width=device-width,initial-scale=1",
     description: 'A description'
   });
@@ -39,6 +59,8 @@ export default function Film(){
 
              <div className="flex-1">
                 <Outlet />
+
+                <CommentsList filmId={film.id} comments={film.comments || []} />
              </div>
             </div>
         </div>
